@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkspaceIndicator {
+public class WorkspaceIndicator implements WorkspaceIconListener {
   private final int horizonalWorkspaces;
   private final int verticalWorkspaces;
   private final SystemTray systemTray;
@@ -20,6 +20,7 @@ public class WorkspaceIndicator {
   private final int height;
 
   private List<WorkspaceIcon> workspaceIcons = new ArrayList<WorkspaceIcon>();
+  private List<WorkspaceIconListener> workspaceIconListeners = new ArrayList<WorkspaceIconListener>();
 
   public WorkspaceIndicator(int horizonalWorkspaces, int verticalWorkspaces) {
     systemTray = SystemTray.getSystemTray();
@@ -51,10 +52,14 @@ public class WorkspaceIndicator {
           curentWorkspaceIconHeight--;
         }
 
-        WorkspaceIcon workspaceIcon = new WorkspaceIcon(trayIcon,
+        int workspaceNo = horizonalWorkspaces * verticalWorkspaces
+            - (verticalWorkspaces - y) * horizonalWorkspaces - x + 1;
+
+        WorkspaceIcon workspaceIcon = new WorkspaceIcon(trayIcon, workspaceNo,
             bufferedImage, lineColor, activeWorkspaceColor,
             inactiveWorkspaceColor, width, curentWorkspaceIconHeight, yOffset);
 
+        workspaceIcon.addWorkspaceClickedListener(this);
         workspaceIcon.draw();
         workspaceIcons.add(0, workspaceIcon);
       }
@@ -76,6 +81,17 @@ public class WorkspaceIndicator {
       }
 
       currentWorkspace++;
+    }
+  }
+  
+  public void addWorkspaceClickedListener(WorkspaceIconListener listener){
+    this.workspaceIconListeners.add(listener);
+  }
+
+  @Override
+  public void workspaceClicked(int workspaceNo) {
+    for(WorkspaceIconListener listener : this.workspaceIconListeners){
+      listener.workspaceClicked(workspaceNo);
     }
   }
 }

@@ -7,29 +7,36 @@ import java.io.IOException;
 /**
  * Dependency: - wmctrl
  **/
-public class Launcher {
+public class Launcher implements WorkspaceIconListener, Runnable{
 
-  public static void main(String[] args) throws InterruptedException,
-      AWTException, IOException {
+  private final WorkspaceManager workspaceManager;
+  private final WorkspaceIndicator workspaceIndicator;
 
-    if (!SystemTray.isSupported()) {
-      throw new RuntimeException("Tray icons is not supported");
-    }
+  public Launcher() throws IOException, AWTException {
+    this.workspaceManager = new WorkspaceManager();
 
-    WorkspaceManager workspaceManager = new WorkspaceManager();
-    workspaceManager.loadSettings();
+    this.workspaceManager.loadSettings();
 
-    WorkspaceIndicator workspaceIndicator = new WorkspaceIndicator(
+    this.workspaceIndicator = new WorkspaceIndicator(
         workspaceManager.getHorizontalWorkspaces(),
         workspaceManager.getVerticalWorkspaces());
 
     workspaceIndicator.initialize();
+    workspaceIndicator.addWorkspaceClickedListener(this);
+  }
+
+  public void run() {
 
     int previousSelectedWorkspace = 0;
 
     while (true) {
 
-      workspaceManager.loadSettings();
+      try {
+        workspaceManager.loadSettings();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
 
       int selectedWorkspace = workspaceManager.getSelectedWorkspace();
 
@@ -38,7 +45,31 @@ public class Launcher {
         previousSelectedWorkspace = selectedWorkspace;
       }
 
-      Thread.sleep(100);
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+  }
+
+  public static void main(String[] args) throws InterruptedException,
+      AWTException, IOException {
+
+    if (!SystemTray.isSupported()) {
+      throw new RuntimeException("Tray icons is not supported");
+    }
+    
+    new Thread(new Launcher()).start();
+  }
+
+  @Override
+  public void workspaceClicked(int workspaceNo) {
+    try {
+      this.workspaceManager.switchWorkspace(workspaceNo);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 }

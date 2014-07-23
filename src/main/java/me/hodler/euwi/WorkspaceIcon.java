@@ -3,9 +3,13 @@ package me.hodler.euwi;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.TrayIcon;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
-public class WorkspaceIcon {
+public class WorkspaceIcon implements MouseListener{
 
   private final TrayIcon trayIcon;
   private final BufferedImage bufferedImage;
@@ -15,21 +19,27 @@ public class WorkspaceIcon {
   private final Color lineColor;
   private final Color selectedColor;
   private final Color deselectedColor;
+  private final int workspaceNo;
   private boolean selected = false;
+  
+  private List<WorkspaceIconListener> workspaceIconListener =new ArrayList<WorkspaceIconListener>(); 
 
-  public WorkspaceIcon(TrayIcon trayIcon, BufferedImage bufferedImage,
+  public WorkspaceIcon(TrayIcon trayIcon, int workspaceNo, BufferedImage bufferedImage,
       Color lineColor, Color selectedColor, Color deselectedColor, int width,
       int height, int offsetY) {
 
     this.trayIcon = trayIcon;
+    this.workspaceNo = workspaceNo;
     this.bufferedImage = bufferedImage;
     this.selectedColor = selectedColor;
     this.deselectedColor = deselectedColor;
     this.lineColor = lineColor;
-
+    
     this.width = width;
     this.height = height;
     this.offsetY = offsetY;
+    
+    this.trayIcon.addMouseListener(this);
   }
 
   public void select() {
@@ -73,4 +83,33 @@ public class WorkspaceIcon {
     this.bufferedImage.flush();
     this.trayIcon.setImage(bufferedImage);
   }
+
+  @Override
+  public void mouseClicked(MouseEvent e) {
+    
+    int yClickPosition = (int) e.getLocationOnScreen().getY(); 
+    
+    if(yClickPosition > this.offsetY  && yClickPosition < (this.offsetY + this.height)){
+      
+      for(WorkspaceIconListener listener : this.workspaceIconListener){
+        listener.workspaceClicked(this.workspaceNo);
+      }
+    }
+  }
+  
+  public void addWorkspaceClickedListener(WorkspaceIconListener workspaceIconListener){
+    this.workspaceIconListener.add(workspaceIconListener);
+  }
+
+  @Override
+  public void mousePressed(MouseEvent e) {}
+
+  @Override
+  public void mouseReleased(MouseEvent e) {}
+
+  @Override
+  public void mouseEntered(MouseEvent e) {}
+
+  @Override
+  public void mouseExited(MouseEvent e) {}
 }

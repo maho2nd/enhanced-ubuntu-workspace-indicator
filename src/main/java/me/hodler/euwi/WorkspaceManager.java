@@ -6,10 +6,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Formatter;
 
 public class WorkspaceManager {
 
-  private static String command = "wmctrl -d";
+  private static String infoCommand = "wmctrl -d";
+  private static String switchCommand = "wmctrl -o %d,%d";
+  private Formatter formatter = new Formatter();
   private int virtualResolutionWidth;
   private int virtualResolutionHeight;
   private int xCurrent;
@@ -37,6 +40,29 @@ public class WorkspaceManager {
     return (currentColumn * getVerticalWorkspaces())
         - (getVerticalWorkspaces() - currentRow);
   }
+  
+  public void switchWorkspace(int workspaceNo) throws IOException{
+
+    int row = 1;
+    int col = 1;
+    
+    if(workspaceNo < getHorizontalWorkspaces()){
+      col = workspaceNo;
+    }else{
+      col = (workspaceNo % getHorizontalWorkspaces());
+      row = (int)Math.ceil(1.0 * workspaceNo / getHorizontalWorkspaces());
+      
+      if(col == 0){
+        col = getHorizontalWorkspaces();
+      }
+    }
+    
+    int xPosition = (col-1) *  screenWidth;
+    int yPosition = (row-1) *  screenHeight;
+    
+    String command = formatter.format(switchCommand, xPosition, yPosition).toString();
+    Runtime.getRuntime().exec(command);
+  }
 
   public void loadSettings() throws IOException {
 
@@ -44,7 +70,7 @@ public class WorkspaceManager {
     screenWidth = (int) screenSize.getWidth();
     screenHeight = (int) screenSize.getHeight();
 
-    Process child = Runtime.getRuntime().exec(command);
+    Process child = Runtime.getRuntime().exec(infoCommand);
     InputStream in = child.getInputStream();
 
     String outString = new BufferedReader(new InputStreamReader(in)).readLine();
