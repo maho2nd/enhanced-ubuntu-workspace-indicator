@@ -1,4 +1,4 @@
 enhanced-ubuntu-workspace-indicator
 ===================================
 
-enhanced ubuntu workspace indicator
+* Requires wmctrl
