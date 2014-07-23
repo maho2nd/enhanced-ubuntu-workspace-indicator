@@ -9,74 +9,73 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkspaceIndicator {
-	private final int horizonalWorkspaces;
-	private final int verticalWorkspaces;
-	private final SystemTray systemTray;
-	private final Color activeWorkspaceColor = Color.decode("#FF4500");
-	private final Color inactiveWorkspaceColor = Color.decode("#EEEEEE");
-	private final Color lineColor = Color.BLACK;
+  private final int horizonalWorkspaces;
+  private final int verticalWorkspaces;
+  private final SystemTray systemTray;
+  private final Color activeWorkspaceColor = Color.decode("#FF4500");
+  private final Color inactiveWorkspaceColor = Color.decode("#EEEEEE");
+  private final Color lineColor = Color.BLACK;
 
-	private final int width;
-	private final int height;
+  private final int width;
+  private final int height;
 
-	private List<WorkspaceIcon> workspaceIcons = new ArrayList<WorkspaceIcon>();
+  private List<WorkspaceIcon> workspaceIcons = new ArrayList<WorkspaceIcon>();
 
-	public WorkspaceIndicator(int horizonalWorkspaces, int verticalWorkspaces) {
-		systemTray = SystemTray.getSystemTray();
+  public WorkspaceIndicator(int horizonalWorkspaces, int verticalWorkspaces) {
+    systemTray = SystemTray.getSystemTray();
 
-		this.horizonalWorkspaces = horizonalWorkspaces;
-		this.verticalWorkspaces = verticalWorkspaces;
+    this.horizonalWorkspaces = horizonalWorkspaces;
+    this.verticalWorkspaces = verticalWorkspaces;
 
-		this.width = systemTray.getTrayIconSize().width;
-		this.height = systemTray.getTrayIconSize().height;
-	}
+    this.width = systemTray.getTrayIconSize().width;
+    this.height = systemTray.getTrayIconSize().height;
+  }
 
-	public void initialize() throws AWTException {
+  public void initialize() throws AWTException {
 
-		for (int x = 1; x <= horizonalWorkspaces; x++) {
+    for (int x = 1; x <= horizonalWorkspaces; x++) {
 
-			BufferedImage bufferedImage = new BufferedImage(width, height,
-					BufferedImage.TYPE_INT_ARGB);
+      BufferedImage bufferedImage = new BufferedImage(width, height,
+          BufferedImage.TYPE_INT_ARGB);
 
-			TrayIcon trayIcon = new TrayIcon(bufferedImage);
+      TrayIcon trayIcon = new TrayIcon(bufferedImage);
 
-			int workspaceIconHeight = height / verticalWorkspaces;
+      int workspaceIconHeight = height / verticalWorkspaces;
 
-			for (int y = verticalWorkspaces; y >= 1; y--) {
+      for (int y = verticalWorkspaces; y >= 1; y--) {
 
-				int yOffset = workspaceIconHeight * (y - 1);
-				int curentWorkspaceIconHeight = workspaceIconHeight;
+        int yOffset = workspaceIconHeight * (y - 1);
+        int curentWorkspaceIconHeight = workspaceIconHeight;
 
-				if (y == verticalWorkspaces) {
-					curentWorkspaceIconHeight--;
-				}
+        if (y == verticalWorkspaces) {
+          curentWorkspaceIconHeight--;
+        }
 
-				WorkspaceIcon workspaceIcon = new WorkspaceIcon(trayIcon,
-						bufferedImage, lineColor, activeWorkspaceColor,
-						inactiveWorkspaceColor, width, curentWorkspaceIconHeight,
-						yOffset);
+        WorkspaceIcon workspaceIcon = new WorkspaceIcon(trayIcon,
+            bufferedImage, lineColor, activeWorkspaceColor,
+            inactiveWorkspaceColor, width, curentWorkspaceIconHeight, yOffset);
 
-				workspaceIcon.draw();
-				workspaceIcons.add(0, workspaceIcon);
-			}
+        workspaceIcon.draw();
+        workspaceIcons.add(0, workspaceIcon);
+      }
 
-			systemTray.add(trayIcon);
-		}
-	}
+      systemTray.add(trayIcon);
+    }
+  }
 
-	public void workspaceChanged(int selectedWorkspace) {
+  public void workspaceChanged(int selectedWorkspace) {
 
-		int currentWorkspace = 1;
-		
-		for (WorkspaceIcon workspaceIcon : workspaceIcons) {
+    int currentWorkspace = 1;
 
-			if (currentWorkspace == selectedWorkspace) {
-				workspaceIcon.select();
-			} else {
-				workspaceIcon.deselect();
-			}
+    for (WorkspaceIcon workspaceIcon : workspaceIcons) {
 
-			currentWorkspace++;
-		}
-	}
+      if (currentWorkspace == selectedWorkspace) {
+        workspaceIcon.select();
+      } else {
+        workspaceIcon.deselect();
+      }
+
+      currentWorkspace++;
+    }
+  }
 }

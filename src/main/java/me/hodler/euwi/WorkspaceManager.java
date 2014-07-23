@@ -9,53 +9,53 @@ import java.io.InputStreamReader;
 
 public class WorkspaceManager {
 
-	private static String command = "wmctrl -d";
-	private int virtualResolutionWidth;
-	private int VirtualResolutionHeight;
-	private int xCurrent;
-	private int yCurrent;
-	private int screenWidth;
-	private int screenHeight;
+  private static String command = "wmctrl -d";
+  private int virtualResolutionWidth;
+  private int virtualResolutionHeight;
+  private int xCurrent;
+  private int yCurrent;
+  private int screenWidth;
+  private int screenHeight;
 
-	public WorkspaceManager() {
-	}
+  public WorkspaceManager() {
+  }
 
-	public int getHorizontalWorkspaces() {
-		return virtualResolutionWidth / screenWidth;
-	}
+  public int getHorizontalWorkspaces() {
+    return virtualResolutionWidth / screenWidth;
+  }
 
-	public int getVerticalWorkspaces() {
-		return VirtualResolutionHeight / screenHeight;
-	}
+  public int getVerticalWorkspaces() {
+    return virtualResolutionHeight / screenHeight;
+  }
 
-	public int getSelectedWorkspace() {
+  public int getSelectedWorkspace() {
 
-		int currentColumn = ((getHorizontalWorkspaces() + 1) - ((virtualResolutionWidth - xCurrent) / screenWidth));
-		
-		int currentRow = ((getVerticalWorkspaces() + 1) - ((VirtualResolutionHeight- yCurrent) / screenHeight));
-		
-		return (currentColumn * getVerticalWorkspaces()) - (getVerticalWorkspaces() -currentRow);
-	}
+    int currentColumn = ((getHorizontalWorkspaces() + 1) - ((virtualResolutionWidth - xCurrent) / screenWidth));
 
-	public void loadSettings() throws IOException {
+    int currentRow = ((getVerticalWorkspaces() + 1) - ((virtualResolutionHeight - yCurrent) / screenHeight));
 
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		screenWidth = (int) screenSize.getWidth();
-		screenHeight = (int) screenSize.getHeight();
+    return (currentColumn * getVerticalWorkspaces())
+        - (getVerticalWorkspaces() - currentRow);
+  }
 
-		Process child = Runtime.getRuntime().exec(command);
-		InputStream in = child.getInputStream();
+  public void loadSettings() throws IOException {
 
-		String outString = new BufferedReader(new InputStreamReader(in))
-				.readLine();
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    screenWidth = (int) screenSize.getWidth();
+    screenHeight = (int) screenSize.getHeight();
 
-		String virtualResolution = outString.split(" ")[4];
-		virtualResolutionWidth = Integer.parseInt(virtualResolution.split("x")[0]);
-		VirtualResolutionHeight = Integer.parseInt(virtualResolution.split("x")[1]);
+    Process child = Runtime.getRuntime().exec(command);
+    InputStream in = child.getInputStream();
 
-		String currentPosition = outString.split(" ")[7];
-		xCurrent = Integer.parseInt(currentPosition.split(",")[0]);
-		yCurrent = Integer.parseInt(currentPosition.split(",")[1]);
-	}
+    String outString = new BufferedReader(new InputStreamReader(in)).readLine();
+
+    String virtualResolution = outString.split(" ")[4];
+    virtualResolutionWidth = Integer.parseInt(virtualResolution.split("x")[0]);
+    virtualResolutionHeight = Integer.parseInt(virtualResolution.split("x")[1]);
+
+    String currentPosition = outString.split(" ")[7];
+    xCurrent = Integer.parseInt(currentPosition.split(",")[0]);
+    yCurrent = Integer.parseInt(currentPosition.split(",")[1]);
+  }
 
 }
