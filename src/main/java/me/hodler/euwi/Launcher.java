@@ -4,9 +4,6 @@ import java.awt.AWTException;
 import java.awt.SystemTray;
 import java.io.IOException;
 
-/**
- * Dependency: - wmctrl
- **/
 public class Launcher implements WorkspaceIconListener, Runnable{
 
   private final WorkspaceManager workspaceManager;
@@ -34,7 +31,6 @@ public class Launcher implements WorkspaceIconListener, Runnable{
       try {
         workspaceManager.loadSettings();
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
 
@@ -48,7 +44,6 @@ public class Launcher implements WorkspaceIconListener, Runnable{
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
     }
